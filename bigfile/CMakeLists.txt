@@ -2,6 +2,8 @@ add_library(bigfile
     SmallFile.cpp
 )
 
+target_compile_options(bigfile PRIVATE -Wall)
+
 target_include_directories(bigfile
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
