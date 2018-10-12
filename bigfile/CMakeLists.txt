@@ -1,5 +1,6 @@
 add_library(bigfile
     SmallFile.cpp
+    FileExtension.cpp
 )
 
 target_compile_options(bigfile PRIVATE -Wall)
