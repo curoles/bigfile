@@ -32,9 +32,16 @@ int main()
     }
 
     {
-        auto f = file::stdio::open(fname, "w"); // open for write only
+        auto f = file::stdio::open(fname+".dummy", "w"); // open for write only
         auto [received_str,read_err,read_errmsg] = f.readAsString();
         assert(read_err && "shall not be able to read file opened for writing only");
+        fs::remove(fname+".dummy");
+    }
+
+    {
+        auto f = file::stdio::open(fname, "r");
+        size_t numLines = file::stdio::countLines(f);
+        assert(numLines == 3);
     }
 
     fs::remove(fname);

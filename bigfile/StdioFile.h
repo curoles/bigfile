@@ -9,9 +9,11 @@
 
 #include <string>
 #include <tuple>
+#include <functional>
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
+#include <iostream>
 
 namespace file::stdio {
 
@@ -86,6 +88,11 @@ public:
 
         return std::make_tuple(s, err, errmsg);
     }
+
+    auto forEachChar(std::function<bool(char)> f) -> void
+    {
+        int c; while ((c = ::fgetc(file_)) != EOF && f((char)c)) { /*keep running*/ }
+    }
 };
 
 static inline
@@ -95,6 +102,15 @@ auto open(const std::string& fname, const std::string& mode) -> file::stdio::Ins
     file.open(fname, mode);
 
     return file;
+}
+
+static inline
+size_t countLines(file::stdio::Instance& file)
+{
+    size_t count{0};
+    auto line_counter = [&count](char c){if (c == '\n') count++; return /*continue*/true;};
+    file.forEachChar(line_counter);
+    return count;
 }
 
 } // namespace file::stdio
