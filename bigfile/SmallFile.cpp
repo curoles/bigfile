@@ -32,6 +32,22 @@ public:
     bool write(const std::string& str) {
         return file_.write(str);
     }
+    auto read_as_string() -> std::tuple<std::string,bool,std::string> {
+        return file_.read_as_string();
+    }
+    auto read_all_lines() -> std::tuple<std::vector<std::string>,bool> {
+        std::vector<std::string> all_lines;
+        file_.set_at_beginning();
+
+        auto streambuf = file::stdio::make_streambuf<char>(file_);
+        std::istream instream(streambuf.get());
+
+        for (std::string line; std::getline(instream, line); ) {
+            all_lines.push_back(line);
+        }
+
+        return std::make_tuple(all_lines,/*err*/false);
+    }
 
 };
 
@@ -62,4 +78,13 @@ bool Instance::write(const std::string& str)
     return pImpl->write(str);
 }
 
+auto Instance::read_as_string() -> std::tuple<std::string,bool,std::string>
+{
+    return pImpl->read_as_string();
+}
+
+auto Instance::read_all_lines() -> std::tuple<std::vector<std::string>,bool>
+{
+    return pImpl->read_all_lines();
+}
 

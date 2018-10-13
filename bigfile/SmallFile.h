@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 //#include <experimental/propagate_const>
 
 #include "FileInterface.h"
@@ -32,6 +33,9 @@ public:
     bool open(const std::string& path, const std::string& mode) override;
     void close() override;
     bool write(const std::string& str) override;
+
+    auto read_as_string() -> std::tuple<std::string,bool,std::string>;
+    auto read_all_lines() -> std::tuple<std::vector<std::string>,bool>;
 
 };
 
