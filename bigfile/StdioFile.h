@@ -46,21 +46,21 @@ public:
     Instance& operator=(Instance&&) = delete;
     Instance& operator=(const Instance&) = delete;
 
-    bool isOpen() const {
+    bool is_open() const {
         return file_ != nullptr;
     }
 
     void close() {
-        if (isOpen()) {
+        if (is_open()) {
             ::fclose(file_);
             file_ = nullptr;
         }
     }
 
     bool open(const std::string& path, const std::string& mode) {
-        if (isOpen()) return false;
+        if (is_open()) return false;
         file_ = ::fopen(path.c_str(), mode.c_str());
-        return isOpen();
+        return is_open();
     }
 
     bool write(const std::string& str) {
@@ -68,16 +68,17 @@ public:
         return ret > 0;
     }
 
-    void setAtBeginning() {
+    void set_at_beginning() {
         ::fseek(file_, 0, SEEK_SET);
     }
 
     std::tuple<std::string,bool,std::string>
-    readAsString(bool fromBeginning=true, void (*reader)(FILE*,std::string&) = read_all_with_fread)
+    read_as_string(bool from_beginning = true,
+                   void (*reader)(FILE*,std::string&) = read_all_with_fread)
     {
         std::string s, errmsg; bool err = false;
 
-        if (fromBeginning) setAtBeginning();
+        if (from_beginning) set_at_beginning();
         reader(file_,s);
 
         if (::ferror(file_)) {
@@ -89,7 +90,7 @@ public:
         return std::make_tuple(s, err, errmsg);
     }
 
-    auto forEachChar(std::function<bool(char)> f) -> void
+    auto for_each_char(std::function<bool(char)> f) -> void
     {
         int c; while ((c = ::fgetc(file_)) != EOF && f((char)c)) { /*keep running*/ }
     }
@@ -105,11 +106,11 @@ auto open(const std::string& fname, const std::string& mode) -> file::stdio::Ins
 }
 
 static inline
-size_t countLines(file::stdio::Instance& file)
+size_t count_lines(file::stdio::Instance& file)
 {
     size_t count{0};
     auto line_counter = [&count](char c){if (c == '\n') count++; return /*continue*/true;};
-    file.forEachChar(line_counter);
+    file.for_each_char(line_counter);
     return count;
 }
 

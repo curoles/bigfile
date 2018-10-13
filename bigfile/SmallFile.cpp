@@ -20,8 +20,8 @@ public:
     }
    ~Impl(){}
 
-    bool isOpen() const {
-        return file_.isOpen();
+    bool is_open() const {
+        return file_.is_open();
     }
     bool open(const std::string& path, const std::string& mode) {
         return file_.open(path, mode);
@@ -39,9 +39,9 @@ Instance& Instance::operator=(Instance&&) = default;
 //Instance::Instance() : pImpl{std::make_unique<Impl>()} {}
 Instance::Instance() : pImpl{new Impl(),[](Impl *impl) { delete impl; }} {}
 
-bool Instance::isOpen() const
+bool Instance::is_open() const
 {
-    return pImpl->isOpen();
+    return pImpl->is_open();
 }
 
 bool Instance::open(const std::string& path, const std::string& mode)

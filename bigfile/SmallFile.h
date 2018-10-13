@@ -28,7 +28,7 @@ public:
     Instance& operator=(Instance&&);
     Instance& operator=(const Instance&) = delete;
 
-    bool isOpen() const override;
+    bool is_open() const override;
     bool open(const std::string& path, const std::string& mode) override;
     bool write(const std::string& str) override;
 
