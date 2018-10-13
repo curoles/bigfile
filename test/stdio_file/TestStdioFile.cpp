@@ -55,6 +55,23 @@ int main()
         assert(instream.eof());
     }
 
+    {
+        std::string fname_zip = fname+".zip";
+        std::string fname_unzip = fname_zip+".txt";
+        assert(file::stdio::zdeflate(fname, fname_zip));
+        assert(file::stdio::zinflate(fname_zip, fname_unzip));
+
+        auto f = file::stdio::open(fname_unzip, "r");
+        auto [received_str,read_err,read_errmsg] = f.read_as_string();
+        if (read_err) {
+            std::cout << "read error:" << read_errmsg << std::endl;
+            return EXIT_FAILURE;
+        }
+        assert(0 == received_str.compare(written_str) && "shall read what was written");
+        fs::remove(fname_zip);
+        fs::remove(fname_unzip);
+    }
+
     fs::remove(fname);
 
     return EXIT_SUCCESS;

@@ -17,6 +17,8 @@
 #include <cerrno>
 #include <cstring>
 
+#include "FileSystem.h"
+
 namespace file::stdio {
 
 static inline
@@ -39,9 +41,7 @@ class Instance
     FILE* file_ = nullptr;
 public:
     Instance():file_{nullptr}{}
-   ~Instance() {
-        close();
-    }
+   ~Instance();
     Instance(Instance&&) = default;
     Instance(const Instance&) = delete;
 
@@ -145,5 +145,8 @@ make_streambuf(
 }
 
 #endif
+
+bool zdeflate(const fs::path& src, const fs::path& dest);
+bool zinflate(const fs::path& src, const fs::path& dest);
 
 } // namespace file::stdio

@@ -7,7 +7,8 @@
  * https://www.zlib.net/manual.html
  * https://zlib.net/zlib_how.html
  */
-//#include "Zlib.h"
+#include "Zlib.h"
+
 #include <cstdio>
 #include <cstring>
 #include <cassert>
@@ -24,7 +25,7 @@
    level is supplied, Z_VERSION_ERROR if the version of zlib.h and the
    version of the library linked do not match, or Z_ERRNO if there is
    an error reading or writing the files. */
-int zlib_deflate(FILE *source, FILE *dest, int level)
+int zlib_zdeflate(FILE *source, FILE *dest, int level)
 {
     int ret, flush;
     unsigned have;
@@ -74,13 +75,18 @@ int zlib_deflate(FILE *source, FILE *dest, int level)
     return Z_OK;
 }
 
+bool file::zlib::zdeflate(FILE *source, FILE *dest)
+{
+    return Z_OK == zlib_zdeflate(source, dest, Z_DEFAULT_COMPRESSION);
+}
+
 /* Decompress from file source to file dest until stream ends or EOF.
    inf() returns Z_OK on success, Z_MEM_ERROR if memory could not be
    allocated for processing, Z_DATA_ERROR if the deflate data is
    invalid or incomplete, Z_VERSION_ERROR if the version of zlib.h and
    the version of the library linked do not match, or Z_ERRNO if there
    is an error reading or writing the files. */
-int zlib_inflate(FILE *source, FILE *dest)
+int zlib_zinflate(FILE *source, FILE *dest)
 {
     int ret;
     unsigned have;
@@ -136,5 +142,10 @@ int zlib_inflate(FILE *source, FILE *dest)
     /* clean up and return */
     (void)inflateEnd(&strm);
     return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
+}
+
+bool file::zlib::zinflate(FILE *source, FILE *dest)
+{
+    return Z_OK == zlib_zinflate(source, dest);
 }
 

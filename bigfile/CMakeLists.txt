@@ -1,4 +1,5 @@
 add_library(bigfile
+    StdioFile.cpp
     SmallFile.cpp
     FileExtension.cpp
     Zlib.cpp
@@ -15,6 +16,7 @@ target_include_directories(bigfile
 )
 
 target_link_libraries(bigfile
+    -lz
 )
 
 set(BIGFILE_PUBLIC_HEADER_FILES 
