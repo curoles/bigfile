@@ -30,6 +30,7 @@ public:
 
     bool is_open() const override;
     bool open(const std::string& path, const std::string& mode) override;
+    void close() override;
     bool write(const std::string& str) override;
 
 };

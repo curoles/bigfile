@@ -10,10 +10,12 @@
 #include <string>
 #include <tuple>
 #include <functional>
+#include <iostream>
+#include <fstream>
+#include <memory>
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
-#include <iostream>
 
 namespace file::stdio {
 
@@ -45,6 +47,8 @@ public:
 
     Instance& operator=(Instance&&) = delete;
     Instance& operator=(const Instance&) = delete;
+
+    FILE* getFILE() {return file_;}
 
     bool is_open() const {
         return file_ != nullptr;
@@ -113,5 +117,33 @@ size_t count_lines(file::stdio::Instance& file)
     file.for_each_char(line_counter);
     return count;
 }
+
+#ifdef __GNUC__
+#include <ext/stdio_filebuf.h>
+
+// User is responsible returned buffer does NOT outlive the file.
+//
+// Example:
+//    auto streambuf = file::stdio::make_streambuf<char>(f);
+//    std::istream instream(streambuf.get());
+//
+//    for (std::string line; std::getline(instream, line); ) {
+//        std::cout << line << std::endl;
+//    }
+//
+template<typename T>
+std::unique_ptr<std::basic_streambuf<T> >
+make_streambuf(
+    file::stdio::Instance& file,
+    std::ios_base::openmode mode = std::ios::in
+)
+{
+    int fd = ::fileno(file.getFILE());
+    auto filebuf = std::make_unique<__gnu_cxx::stdio_filebuf<T> >(fd, mode);
+
+    return filebuf;
+}
+
+#endif
 
 } // namespace file::stdio

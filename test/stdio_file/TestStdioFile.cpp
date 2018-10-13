@@ -44,6 +44,17 @@ int main()
         assert(numLines == 3);
     }
 
+    {
+        auto f = file::stdio::open(fname, "r");
+        auto streambuf = file::stdio::make_streambuf<char>(f);
+        std::istream instream(streambuf.get());
+        assert(instream.good());
+        for (std::string line; std::getline(instream, line); ) {
+            std::cout << line << std::endl;
+        }
+        assert(instream.eof());
+    }
+
     fs::remove(fname);
 
     return EXIT_SUCCESS;

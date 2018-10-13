@@ -26,6 +26,9 @@ public:
     bool open(const std::string& path, const std::string& mode) {
         return file_.open(path, mode);
     }
+    void close() {
+        file_.close();
+    }
     bool write(const std::string& str) {
         return file_.write(str);
     }
@@ -47,6 +50,11 @@ bool Instance::is_open() const
 bool Instance::open(const std::string& path, const std::string& mode)
 {
     return pImpl->open(path, mode);
+}
+
+void Instance::close()
+{
+    return pImpl->close();
 }
 
 bool Instance::write(const std::string& str)
