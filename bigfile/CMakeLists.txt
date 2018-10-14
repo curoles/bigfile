@@ -14,11 +14,12 @@ add_library(bigfile
     SmallFile.cpp
     BigFile.cpp
     FileExtension.cpp
+    FileInfo.cpp
     Zlib.cpp
     Gpg.cpp
 )
 
-target_compile_options(bigfile PRIVATE -Wall)
+target_compile_options(bigfile PRIVATE -Wall -Werror)
 
 target_include_directories(bigfile
     PUBLIC 
