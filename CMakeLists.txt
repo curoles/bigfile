@@ -18,17 +18,29 @@ set (CMAKE_CXX_EXTENSIONS OFF)
 # Install inside build directory
 set (CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
 
+option(ENABLE_TESTS "Build tests?" ON)
+option(ENABLE_DOCS  "Build docs?"  ON)
+
 add_subdirectory (bigfile)
 #add_subdirectory (study)
-#add_subdirectory (doc)
 
-enable_testing() 
-#find_package(GTest REQUIRED) 
-add_subdirectory (test) 
+if (ENABLE_DOCS)
+    #add_subdirectory (doc)
+endif (ENABLE_DOCS)
+
+if (ENABLE_TESTS)
+    enable_testing() 
+    #find_package(GTest REQUIRED) 
+    add_subdirectory (test) 
+endif (ENABLE_TESTS)
 
 # Show important CMAKE variables
-MESSAGE( STATUS "CMAKE_C_COMPILER:       " ${CMAKE_C_COMPILER} )
-MESSAGE( STATUS "CMAKE_CXX_COMPILER:     " ${CMAKE_CXX_COMPILER} )
-MESSAGE( STATUS "CMAKE_INSTALL_PREFIX:   " ${CMAKE_INSTALL_PREFIX} )
+message( STATUS "CMAKE_C_COMPILER:       " ${CMAKE_C_COMPILER} )
+message( STATUS "CMAKE_CXX_COMPILER:     " ${CMAKE_CXX_COMPILER} )
+message( STATUS "CMAKE_INSTALL_PREFIX:   " ${CMAKE_INSTALL_PREFIX} )
 #MESSAGE( STATUS "DOXYGEN_EXECUTABLE:     " ${DOXYGEN_EXECUTABLE} )
 #MESSAGE( STATUS "DOXYGEN_DOT_EXECUTABLE: " ${DOXYGEN_DOT_EXECUTABLE} )
+
+if (CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "DEBUG"))
+    message("Build type is DEBUG")
+endif ()

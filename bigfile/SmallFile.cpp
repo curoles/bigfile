@@ -70,7 +70,7 @@ bool Instance::open(const std::string& path, const std::string& mode)
 
 void Instance::close()
 {
-    return pImpl->close();
+    pImpl->close();
 }
 
 bool Instance::write(const std::string& str)

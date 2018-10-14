@@ -1,8 +1,21 @@
+find_package(ZLIB  REQUIRED)
+if (NOT ZLIB_FOUND)
+    message(FATAL_ERROR "No ZLIB library found/installed")
+endif (NOT ZLIB_FOUND)
+
+#find_package(Gpgme REQUIRED)
+#if (NOT GPGME_FOUND)
+#    message(FATAL_ERROR "No Gpgme library found/installed")
+#endif (NOT GPGMEB_FOUND)
+
+
 add_library(bigfile
     StdioFile.cpp
     SmallFile.cpp
+    BigFile.cpp
     FileExtension.cpp
     Zlib.cpp
+    Gpg.cpp
 )
 
 target_compile_options(bigfile PRIVATE -Wall)
@@ -16,6 +29,7 @@ target_include_directories(bigfile
 )
 
 target_link_libraries(bigfile
+    -lstdc++fs
     -lz
 )
 

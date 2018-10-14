@@ -16,7 +16,7 @@ namespace file::big {
 class Instance : public file::any::Interface
 {
     class Impl;
-    std::unique_ptr<Impl> pImpl;
+    std::unique_ptr<Impl, void (*)(Impl *)> pImpl;
 public:
     Instance();
    ~Instance();
@@ -26,7 +26,12 @@ public:
     Instance& operator=(Instance&&);
     Instance& operator=(const Instance&) = delete;
 
-    bool isOpen() const override;
+    bool is_open() const override;
+    bool open(const std::string& path, const std::string& mode) override;
+    void close() override;
+    bool write(const std::string& str) override;
+
 };
+
 
 }
