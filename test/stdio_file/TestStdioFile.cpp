@@ -21,9 +21,9 @@ int main()
     {
         auto f2 = file::stdio::open(fname, "r");
         assert(f2.is_open());
-        auto [received_str,read_err,read_errmsg] = f2.read_as_string();
-        if (read_err) {
-            std::cout << "read error:" << read_errmsg << std::endl;
+        auto [received_str,read_err,ferr] = f2.read_as_string();
+        if (file::is_err(read_err)) {
+            std::cout << "read error: " << file::errmsg(read_err,ferr) << std::endl;
             return EXIT_FAILURE;
         }
         assert(0 == received_str.compare(written_str) && "shall read what was written");
@@ -34,7 +34,7 @@ int main()
     {
         auto f = file::stdio::open(fname+".dummy", "w"); // open for write only
         auto [received_str,read_err,read_errmsg] = f.read_as_string();
-        assert(read_err && "shall not be able to read file opened for writing only");
+        assert(!!read_err && "shall not be able to read file opened for writing only");
         fs::remove(fname+".dummy");
     }
 
@@ -63,7 +63,7 @@ int main()
 
         auto f = file::stdio::open(fname_unzip, "r");
         auto [received_str,read_err,read_errmsg] = f.read_as_string();
-        if (read_err) {
+        if (!!read_err) {
             std::cout << "read error:" << read_errmsg << std::endl;
             return EXIT_FAILURE;
         }

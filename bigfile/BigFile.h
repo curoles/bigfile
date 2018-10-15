@@ -10,8 +10,12 @@
 #include <memory>
 
 #include "FileInterface.h"
+#include "FileError.h"
+#include "FileSystem.h"
 
 namespace file::big {
+
+constexpr size_t default_block_size = 128 * 1024 * 1024;
 
 class Instance : public file::any::Interface
 {
@@ -25,6 +29,10 @@ public:
 
     Instance& operator=(Instance&&);
     Instance& operator=(const Instance&) = delete;
+
+    auto create_new(
+        const fs::path& path,
+        size_t block_size = default_block_size) -> file::error;
 
     bool is_open() const override;
     bool open(const std::string& path, const std::string& mode) override;

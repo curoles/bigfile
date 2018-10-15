@@ -12,6 +12,7 @@
 //#include <experimental/propagate_const>
 
 #include "FileInterface.h"
+#include "FileError.h"
 
 namespace file::small {
 
@@ -34,7 +35,7 @@ public:
     void close() override;
     bool write(const std::string& str) override;
 
-    auto read_as_string() -> std::tuple<std::string,bool,std::string>;
+    auto read_as_string() -> std::tuple<std::string,file::error,int>;
     auto read_all_lines() -> std::tuple<std::vector<std::string>,bool>;
 
 };

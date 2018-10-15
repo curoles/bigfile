@@ -21,20 +21,20 @@ int main()
     {
         auto f2 = file::small::open(fname, "r");
         assert(f2.is_open());
-        auto [received_str,read_err,read_errmsg] = f2.read_as_string();
-        if (read_err) {
-            std::cout << "read error:" << read_errmsg << std::endl;
+        auto [received_str,read_err,ferr] = f2.read_as_string();
+        if (!!read_err) {
+            std::cout << "read error:" << file::errmsg(read_err,ferr) << std::endl;
             return EXIT_FAILURE;
         }
         assert(0 == received_str.compare(written_str) && "shall read what was written");
-        auto [received_str2,read_err2,read_errmsg2] = f2.read_as_string();
+        auto [received_str2,read_err2,ferr2] = f2.read_as_string();
         assert(0 == received_str2.compare(written_str) && "shall read what was written");
     }
 
     {
         auto f = file::small::open(fname+"dummy", "w"); // open for write only
-        auto [received_str,read_err,read_errmsg] = f.read_as_string();
-        assert(read_err && "shall not be able to read file opened for writing only");
+        auto [received_str,read_err,ferr] = f.read_as_string();
+        assert(!!read_err && "shall not be able to read file opened for writing only");
     }
 
     {

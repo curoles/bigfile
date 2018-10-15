@@ -15,6 +15,7 @@ add_library(bigfile
     BigFile.cpp
     FileExtension.cpp
     FileInfo.cpp
+    FileError.cpp
     Zlib.cpp
     Gpg.cpp
 )

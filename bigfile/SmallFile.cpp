@@ -32,7 +32,7 @@ public:
     bool write(const std::string& str) {
         return file_.write(str);
     }
-    auto read_as_string() -> std::tuple<std::string,bool,std::string> {
+    auto read_as_string() -> std::tuple<std::string,file::error,int> {
         return file_.read_as_string();
     }
     auto read_all_lines() -> std::tuple<std::vector<std::string>,bool> {
@@ -78,7 +78,7 @@ bool Instance::write(const std::string& str)
     return pImpl->write(str);
 }
 
-auto Instance::read_as_string() -> std::tuple<std::string,bool,std::string>
+auto Instance::read_as_string() -> std::tuple<std::string,file::error,int>
 {
     return pImpl->read_as_string();
 }

@@ -18,6 +18,7 @@
 #include <cstring>
 
 #include "FileSystem.h"
+#include "FileError.h"
 
 namespace file::stdio {
 
@@ -76,22 +77,20 @@ public:
         ::fseek(file_, 0, SEEK_SET);
     }
 
-    std::tuple<std::string,bool,std::string>
+    std::tuple<std::string,file::error,int>
     read_as_string(bool from_beginning = true,
                    void (*reader)(FILE*,std::string&) = read_all_with_fread)
     {
-        std::string s, errmsg; bool err = false;
+        std::string s;
 
         if (from_beginning) set_at_beginning();
         reader(file_,s);
 
         if (::ferror(file_)) {
-            err = true; errmsg = ::strerror(::ferror(file_));
-        } else if (! ::feof(file_)) {
-            err = true; errmsg = "End of file NOT reached";
+            return std::make_tuple(s, file::error::CHECK_FERROR, std::ferror(file_));
         }
 
-        return std::make_tuple(s, err, errmsg);
+        return std::make_tuple(s, file::error::NONE, 0);
     }
 
     auto for_each_char(std::function<bool(char)> f) -> void
