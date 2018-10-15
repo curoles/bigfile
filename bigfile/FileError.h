@@ -20,7 +20,10 @@ enum class error
     CHECK_FERROR,
     CHECK_STD_ERR_CODE,
     ALREADY_OPEN,
-    ALREADY_EXISTS
+    ALREADY_EXISTS,
+    CAN_NOT_CREATE,
+    CAN_NOT_OPEN,
+    CAN_NOT_GET_LOCK
 };
 
 static inline

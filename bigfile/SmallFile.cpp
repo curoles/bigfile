@@ -20,7 +20,7 @@ public:
     }
    ~Impl(){}
 
-    bool is_open() const {
+    bool is_open() {
         return file_.is_open();
     }
     bool open(const std::string& path, const std::string& mode) {
@@ -48,6 +48,12 @@ public:
 
         return std::make_tuple(all_lines,/*err*/false);
     }
+    auto set_at_beginning() {
+        file_.set_at_beginning();
+    }
+    auto is_open_for_read_only() -> bool {
+        return file_.is_open_for_read_only();
+    }
 
 };
 
@@ -58,7 +64,7 @@ Instance& Instance::operator=(Instance&&) = default;
 //Instance::Instance() : pImpl{std::make_unique<Impl>()} {}
 Instance::Instance() : pImpl{new Impl(),[](Impl *impl) { delete impl; }} {}
 
-bool Instance::is_open() const
+bool Instance::is_open()
 {
     return pImpl->is_open();
 }
@@ -86,5 +92,15 @@ auto Instance::read_as_string() -> std::tuple<std::string,file::error,int>
 auto Instance::read_all_lines() -> std::tuple<std::vector<std::string>,bool>
 {
     return pImpl->read_all_lines();
+}
+
+auto Instance::set_at_beginning() -> void
+{
+    pImpl->set_at_beginning();
+}
+
+auto Instance::is_open_for_read_only() -> bool
+{
+    return pImpl->is_open_for_read_only();
 }
 

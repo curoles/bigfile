@@ -51,7 +51,7 @@ public:
 
     FILE* getFILE() {return file_;}
 
-    bool is_open() const {
+    bool is_open() {
         return file_ != nullptr;
     }
 
@@ -74,7 +74,7 @@ public:
     }
 
     void set_at_beginning() {
-        ::fseek(file_, 0, SEEK_SET);
+        ::rewind(file_); //::fseek(file_, 0, SEEK_SET);
     }
 
     std::tuple<std::string,file::error,int>
@@ -93,10 +93,16 @@ public:
         return std::make_tuple(s, file::error::NONE, 0);
     }
 
-    auto for_each_char(std::function<bool(char)> f) -> void
+    void for_each_char(std::function<bool(char)> f)
     {
         int c; while ((c = ::fgetc(file_)) != EOF && f((char)c)) { /*keep running*/ }
     }
+
+    bool is_open_for_read_only();
+
+    bool is_range_locked(int len = 0 /*0 means infinity*/);
+    bool try_to_lock_range(int len = 0);
+    bool unlock_range(int len = 0);
 };
 
 static inline

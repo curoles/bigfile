@@ -30,7 +30,7 @@ public:
     Instance& operator=(Instance&&);
     Instance& operator=(const Instance&) = delete;
 
-    bool is_open() const override;
+    bool is_open() override;
     bool open(const std::string& path, const std::string& mode) override;
     void close() override;
     bool write(const std::string& str) override;
@@ -38,6 +38,8 @@ public:
     auto read_as_string() -> std::tuple<std::string,file::error,int>;
     auto read_all_lines() -> std::tuple<std::vector<std::string>,bool>;
 
+    auto set_at_beginning() -> void;
+    auto is_open_for_read_only() -> bool;
 };
 
 static inline

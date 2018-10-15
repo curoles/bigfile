@@ -34,7 +34,7 @@ public:
         const fs::path& path,
         size_t block_size = default_block_size) -> file::error;
 
-    bool is_open() const override;
+    bool is_open() override;
     bool open(const std::string& path, const std::string& mode) override;
     void close() override;
     bool write(const std::string& str) override;

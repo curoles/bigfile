@@ -7,6 +7,11 @@
  */
 #include "StdioFile.h"
 
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+
 #include "Zlib.h"
 
 using namespace file::stdio;
@@ -14,6 +19,27 @@ using namespace file::stdio;
 Instance::~Instance()
 {
     close();
+}
+
+bool Instance::is_open_for_read_only()
+{
+    return ::fcntl(::fileno(file_), F_GETFL) & O_RDONLY;
+}
+
+//TODO use Open-file description locks, see https://gavv.github.io/blog/file-locks/
+bool Instance::is_range_locked(int len)
+{
+    return 0 == ::lockf(::fileno(file_), F_TEST, len);
+}
+
+bool Instance::try_to_lock_range(int len)
+{
+    return 0 == ::lockf(::fileno(file_), F_TLOCK, len);
+}
+
+bool Instance::unlock_range(int len)
+{
+    return 0 == ::lockf(::fileno(file_), F_ULOCK, len);
 }
 
 bool file::stdio::zdeflate(const fs::path& src_path, const fs::path& dest_path)
