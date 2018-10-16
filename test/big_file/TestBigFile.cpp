@@ -7,13 +7,22 @@
 int main()
 {
     std::string fname = "test_big.txt";
+    fs::remove_all(fname);
+
+    std::string written_str = "123456789\n123456789\n123456789\n";
 
     {
-        file::big::Instance iambig;
+        file::big::Instance f;
+        file::error err = f.create_new(fname, 10);
+        if (!!err) {
+            std::cout << "Error: " << file::errmsg(err) << std::endl;
+            return 1;
+        }
+        assert(f.is_open());
+        f.write(written_str);
     }
 
 #if 0
-    std::string written_str = "word1\n word2 word3\nword4\n";
 
     {
         auto f = file::small::open(fname, "w");
@@ -50,8 +59,9 @@ int main()
             std::cout << line << std::endl;
         }
     }
-
-    fs::remove(fname);
 #endif
+
+    //TODO fs::remove_all(fname);
+
     return EXIT_SUCCESS;
 }

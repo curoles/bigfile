@@ -54,6 +54,15 @@ public:
     auto is_open_for_read_only() -> bool {
         return file_.is_open_for_read_only();
     }
+    auto is_range_locked(int len = 0 /*0 means infinity*/) -> bool {
+        return file_.is_range_locked(len);
+    }
+    auto try_to_lock_range(int len = 0) -> bool {
+        return file_.try_to_lock_range(len);
+    }
+    auto unlock_range(int len = 0) -> bool {
+        return file_.unlock_range(len);
+    }
 
 };
 
@@ -102,5 +111,20 @@ auto Instance::set_at_beginning() -> void
 auto Instance::is_open_for_read_only() -> bool
 {
     return pImpl->is_open_for_read_only();
+}
+
+auto Instance::is_range_locked(int len /*0 means infinity*/) -> bool
+{
+    return pImpl->is_range_locked(len);
+}
+
+auto Instance::try_to_lock_range(int len) -> bool
+{
+    return pImpl->try_to_lock_range(len);
+}
+
+auto Instance::unlock_range(int len) -> bool
+{
+    return pImpl->unlock_range(len);
 }
 

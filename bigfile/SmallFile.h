@@ -40,6 +40,11 @@ public:
 
     auto set_at_beginning() -> void;
     auto is_open_for_read_only() -> bool;
+
+    bool is_range_locked(int len = 0 /*0 means infinity*/);
+    bool try_to_lock_range(int len = 0);
+    bool unlock_range(int len = 0);
+
 };
 
 static inline

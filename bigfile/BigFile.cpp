@@ -22,12 +22,20 @@ public:
 
     auto create_new(const fs::path& path, size_t block_size) -> file::error;
 
+    auto block_size() { return block_size_; }
+
     auto try_to_lock() -> bool;
     auto unlock() -> void;
 
     auto is_open() -> bool {
         return lock_file_.is_open();
     }
+
+    auto is_open_for_read_only() -> bool {
+        return lock_file_.is_open_for_read_only();
+    }
+
+    auto write(const std::string& str) -> bool;
 };
 
 Instance::Impl::~Impl()
@@ -51,6 +59,7 @@ auto Instance::Impl::create_new(
     this->path_ = path;
 
     if (!try_to_lock()) {
+        fs::remove_all(path);
         return file::error::CAN_NOT_GET_LOCK;
     }
 
@@ -63,9 +72,14 @@ auto Instance::Impl::create_new(
 auto Instance::Impl::try_to_lock() -> bool
 {
     // File System allows only one process to open file for writing.
-    if (!lock_file_.open(path_ /= ".lock", "w")) return false;
+    if (!lock_file_.open(path_ / ".lock", "w")) return false;
 
     lock_file_.set_at_beginning();
+    if (lock_file_.is_range_locked() || !lock_file_.try_to_lock_range()) {
+        lock_file_.close();
+        return false;
+    }
+
     lock_file_.write("1");
 
     return true;
@@ -82,6 +96,39 @@ auto Instance::Impl::unlock() -> void
     }
 }
 
+auto Instance::Impl::write(const std::string& str) -> bool
+{
+    if (!is_open() or is_open_for_read_only()) return false;
+#if 0
+    if (!current_block_.is_open()) {
+        current_block_.open(path / std::to_string(current_block_index_), "a");
+        if (!current_block_.is_open()) return false;
+    }
+
+    size_t current_size = current_block_.file_size();
+    if (current_size >= block_size_) {
+        current_block_index++;
+        current_block_.close();
+        return this->write(str);
+    }
+
+    size_t available_space = block_size_ - current_size;
+    if (available_space >= str.size())
+    {
+        return current_block_.write(str);
+    }
+    else
+    {
+        current_block_.write(std, available_space);
+        current_block_.close();
+        current_block_index++;
+        return this->write(substring size-written);
+    }
+#endif
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 Instance::~Instance() = default;
 Instance& Instance::operator=(Instance&&) = default;
@@ -111,6 +158,11 @@ void Instance::close()
 
 bool Instance::write(const std::string& str)
 {
-    return false;//pImpl->write(str);
+    return pImpl->write(str);
+}
+
+size_t Instance::block_size()
+{
+    return block_size();
 }
 

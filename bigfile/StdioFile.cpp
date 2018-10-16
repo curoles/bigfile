@@ -29,7 +29,7 @@ bool Instance::is_open_for_read_only()
 //TODO use Open-file description locks, see https://gavv.github.io/blog/file-locks/
 bool Instance::is_range_locked(int len)
 {
-    return 0 == ::lockf(::fileno(file_), F_TEST, len);
+    return 0 != ::lockf(::fileno(file_), F_TEST, len);
 }
 
 bool Instance::try_to_lock_range(int len)
