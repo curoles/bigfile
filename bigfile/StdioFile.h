@@ -23,17 +23,24 @@
 namespace file::stdio {
 
 static inline
-void read_all_with_fgetc(FILE* fp, std::string& s)
+void read_all_with_fgetc(FILE* fp, std::string& s, size_t max_size)
 {
-    int c; while ((c = ::fgetc(fp)) != EOF) { s += (char)c; }
+    size_t size = 0;
+    int c; while ((c = ::fgetc(fp)) != EOF && size < max_size) {
+        s += (char)c;
+        ++size;
+    }
 }
 
 static inline
-void read_all_with_fread(FILE* fp, std::string& s)
+void read_all_with_fread(FILE* fp, std::string& s, size_t max_size)
 {
-    char buf[1024]; size_t num_bytes_received;
-    while ((num_bytes_received = ::fread(buf, 1, sizeof(buf), fp)) != 0) {
+    char buf[16*1024]; size_t num_bytes_received; size_t size = 0;
+    while ((num_bytes_received = ::fread(buf, 1, sizeof(buf), fp)) != 0
+            && size < max_size)
+    {
         s.append(buf, num_bytes_received);
+        size += num_bytes_received;
     }
 }
 
@@ -68,9 +75,10 @@ public:
         return is_open();
     }
 
-    bool write(const std::string& str) {
-        int ret = ::fputs(str.c_str(), file_);
-        return ret > 0;
+    bool write(const std::string& str, size_t len = 0) {
+        size_t size = (len == 0)? str.size() : std::min(str.size(), len);
+        size_t num_written_elements = ::fwrite(str.c_str(), 1, size, file_);
+        return num_written_elements == size;
     }
 
     void set_at_beginning() {
@@ -79,12 +87,13 @@ public:
 
     std::tuple<std::string,file::error,int>
     read_as_string(bool from_beginning = true,
-                   void (*reader)(FILE*,std::string&) = read_all_with_fread)
+                   size_t max_size = 128*1024*1024,
+                   void (*reader)(FILE*,std::string&,size_t) = read_all_with_fread)
     {
         std::string s;
 
         if (from_beginning) set_at_beginning();
-        reader(file_,s);
+        reader(file_, s, max_size);
 
         if (::ferror(file_)) {
             return std::make_tuple(s, file::error::CHECK_FERROR, std::ferror(file_));
@@ -103,6 +112,8 @@ public:
     bool is_range_locked(int len = 0 /*0 means infinity*/);
     bool try_to_lock_range(int len = 0);
     bool unlock_range(int len = 0);
+
+    size_t file_size();
 };
 
 static inline

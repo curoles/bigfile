@@ -13,6 +13,8 @@ using namespace file::small;
 
 class Instance::Impl
 {
+    friend class file::small::Instance;
+
     file::stdio::Instance file_;
 public:
     Impl(){
@@ -62,6 +64,9 @@ public:
     }
     auto unlock_range(int len = 0) -> bool {
         return file_.unlock_range(len);
+    }
+    auto file_size() -> size_t {
+        return file_.file_size();
     }
 
 };
@@ -128,3 +133,12 @@ auto Instance::unlock_range(int len) -> bool
     return pImpl->unlock_range(len);
 }
 
+auto Instance::file_size() -> size_t
+{
+    return pImpl->file_size();
+}
+
+auto Instance::write(const std::string& str, size_t len) -> bool
+{
+    return pImpl->file_.write(str, len);
+}

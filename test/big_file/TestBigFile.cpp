@@ -6,7 +6,7 @@
 
 int main()
 {
-    std::string fname = "test_big.txt";
+    fs::path fname = "test_big.txt";
     fs::remove_all(fname);
 
     std::string written_str = "123456789\n123456789\n123456789\n";
@@ -20,6 +20,9 @@ int main()
         }
         assert(f.is_open());
         f.write(written_str);
+        assert( fs::exists(fname / "0") );
+        assert( fs::exists(fname / "1") );
+        assert( fs::exists(fname / "2") );
     }
 
 #if 0

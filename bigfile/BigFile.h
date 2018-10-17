@@ -41,6 +41,7 @@ public:
     void close() override;
     bool write(const std::string& str) override;
 
+    std::string read_string(bool from_beginning, size_t max_size);
 };
 
 

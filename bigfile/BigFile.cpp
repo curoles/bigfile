@@ -7,6 +7,8 @@
  */
 #include "BigFile.h"
 
+#include <cassert>
+
 #include "SmallFile.h"
 
 using namespace file::big;
@@ -16,7 +18,8 @@ class Instance::Impl
     fs::path path_;
     size_t block_size_ = file::big::default_block_size;
     file::small::Instance lock_file_;
-    //file::small::Instance current_block_;
+    file::small::Instance current_block_;
+    size_t current_block_index_ = 0;
 public:
    ~Impl();
 
@@ -36,6 +39,9 @@ public:
     }
 
     auto write(const std::string& str) -> bool;
+
+    auto read_string(bool from_beginning, size_t max_size) -> std::string;
+
 };
 
 Instance::Impl::~Impl()
@@ -57,6 +63,7 @@ auto Instance::Impl::create_new(
     }
 
     this->path_ = path;
+    this->block_size_ = block_size;
 
     if (!try_to_lock()) {
         fs::remove_all(path);
@@ -99,15 +106,15 @@ auto Instance::Impl::unlock() -> void
 auto Instance::Impl::write(const std::string& str) -> bool
 {
     if (!is_open() or is_open_for_read_only()) return false;
-#if 0
+
     if (!current_block_.is_open()) {
-        current_block_.open(path / std::to_string(current_block_index_), "a");
+        current_block_.open(path_ / std::to_string(current_block_index_), "a");
         if (!current_block_.is_open()) return false;
     }
 
     size_t current_size = current_block_.file_size();
     if (current_size >= block_size_) {
-        current_block_index++;
+        ++current_block_index_;
         current_block_.close();
         return this->write(str);
     }
@@ -119,13 +126,19 @@ auto Instance::Impl::write(const std::string& str) -> bool
     }
     else
     {
-        current_block_.write(std, available_space);
+        current_block_.write(str, available_space);
         current_block_.close();
-        current_block_index++;
-        return this->write(substring size-written);
+        ++current_block_index_;
+        return this->write(str.substr(available_space));
     }
-#endif
+
     return true;
+}
+
+auto Instance::Impl::read_string(bool from_beginning, size_t max_size) -> std::string
+{
+    assert(!"not implemented");
+    return "";
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -148,12 +161,12 @@ bool Instance::is_open()
 
 bool Instance::open(const std::string& path, const std::string& mode)
 {
-    return false;//pImpl->open(path, mode);
+    return false;//pImpl->open(path, mode); FIXME
 }
 
 void Instance::close()
 {
-    //pImpl->close();
+    //pImpl->close(); FIXME
 }
 
 bool Instance::write(const std::string& str)
@@ -163,6 +176,11 @@ bool Instance::write(const std::string& str)
 
 size_t Instance::block_size()
 {
-    return block_size();
+    return pImpl->block_size();
+}
+
+std::string Instance::read_string(bool from_beginning, size_t max_size)
+{
+    return pImpl->read_string(from_beginning, max_size);
 }
 

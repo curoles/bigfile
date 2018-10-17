@@ -34,6 +34,7 @@ public:
     bool open(const std::string& path, const std::string& mode) override;
     void close() override;
     bool write(const std::string& str) override;
+    bool write(const std::string& str, size_t len);
 
     auto read_as_string() -> std::tuple<std::string,file::error,int>;
     auto read_all_lines() -> std::tuple<std::vector<std::string>,bool>;
@@ -45,6 +46,7 @@ public:
     bool try_to_lock_range(int len = 0);
     bool unlock_range(int len = 0);
 
+    size_t file_size();
 };
 
 static inline

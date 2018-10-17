@@ -27,7 +27,7 @@ int main()
             return EXIT_FAILURE;
         }
         assert(0 == received_str.compare(written_str) && "shall read what was written");
-        auto [received_str2,read_err2,read_errmsg2] = f2.read_as_string(true,file::stdio::read_all_with_fgetc);
+        auto [received_str2,read_err2,read_errmsg2] = f2.read_as_string(true,1024,file::stdio::read_all_with_fgetc);
         assert(0 == received_str2.compare(written_str) && "shall read what was written");
     }
 

@@ -21,6 +21,16 @@ Instance::~Instance()
     close();
 }
 
+size_t Instance::file_size()
+{
+    if (struct stat stbuf; ::fstat(::fileno(file_), &stbuf) != 0
+                           || (!S_ISREG(stbuf.st_mode))) {
+        return stbuf.st_size;
+    }
+
+    return 0;
+}
+
 bool Instance::is_open_for_read_only()
 {
     return ::fcntl(::fileno(file_), F_GETFL) & O_RDONLY;
